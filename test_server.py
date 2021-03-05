@@ -3,6 +3,9 @@ import pytest
 
 from server import *
 
+TEST_EMODJI = ['&#128507;', '&#128508;']
+TEST_WORD_LENGTH = 6
+
 
 class MockResponse:
     def __init__(self, text, status):
@@ -62,3 +65,16 @@ async def test_get_content(page, expected_result, expectation):
     with expectation:
         result = await get_content(page)
         assert result == expected_result
+
+test_modify_content_testdata = [
+    ('aaaaaa', f'aaaaaa{TEST_EMODJI[0]}'),
+    ('aaaaaa.', f'aaaaaa{TEST_EMODJI[0]}.'),
+    ('aaaaaa aaaaaa', f'aaaaaa{TEST_EMODJI[0]} aaaaaa{TEST_EMODJI[1]}'),
+    ('aaaaaa aaaaaa aaaaaa', f'aaaaaa{TEST_EMODJI[0]} aaaaaa{TEST_EMODJI[1]} aaaaaa{TEST_EMODJI[0]}')
+]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("content, expected_result", test_modify_content_testdata)
+async def test_modify_content(content, expected_result):
+    assert await modify_content(content, TEST_WORD_LENGTH) == expected_result
